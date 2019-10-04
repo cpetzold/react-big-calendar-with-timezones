@@ -12,6 +12,7 @@ import {
   getNow,
   getTimeAsDate
 } from '../utils/dateUtils';
+// this converts my date strings to JS Date objects (local time)
 import useNormalizedDates from './useNormalizedDates.hook';
 
 let formats = {
