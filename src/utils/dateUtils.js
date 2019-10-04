@@ -2,8 +2,8 @@ import moment from './moment';
 
 export const currentTimezone = moment.tz.guess();
 /**
- * We have defined the Scheduler defaultProps here so that it is easier
- * to write unit testing against them for proper function coverage
+ * This will create a 'moment' object that *is* moment.tz(), and automatically use the
+ * 'timezone' used when you called 'getMoment()'
  */
 export const getMoment = (timezone = currentTimezone) => {
   const m = (...args) => moment.tz(...args, timezone);
@@ -11,10 +11,15 @@ export const getMoment = (timezone = currentTimezone) => {
   return m;
 };
 
+/**
+ * 'datetime' is a JS Date object
+ * 'tzMoment is the 'moment' object you got from 'getMoment()'
+ */
 export const convertDateTimeToDate = (datetime, tzMoment) => {
   return new Date(tzMoment(datetime).format()); // sets Date using ISO 8601 format
 };
 
+// *not* using this
 export const convertDateToDateTime = (date, timezone) => {
   const m = moment.tz(date, timezone);
   return moment.tz(
@@ -29,7 +34,16 @@ export const convertDateToDateTime = (date, timezone) => {
   );
 };
 
+/**
+ * 'hour' is an integer from 0 - 23 specifying the hour to set on the Date
+ * 'tzMoment is the 'moment' object you got from 'getMoment()'
+ */
 export const getTimeAsDate = (hour, tzMoment) => {
+  if (hour < 0 || hour > 23) {
+    throw Error(
+      `*${hour}* is an invalid 'hour' value, which must be between 0 and 23.`
+    );
+  }
   const m = tzMoment('1970-01-01');
   return new Date(
     m
@@ -39,7 +53,11 @@ export const getTimeAsDate = (hour, tzMoment) => {
   );
 };
 
-export const getNow = (now, timezone) => convertDateTimeToDate(now(), timezone);
+/*
+ * 'now' is your 'getNow' method
+ * 'tzMoment is the 'moment' object you got from 'getMoment()'
+ */
+export const getNow = (now, tzMoment) => convertDateTimeToDate(now(), tzMoment);
 
 export const dateRangeHeaderFormat = ({ start, end }, culture, localizer) =>
   `${localizer.format(start, 'ddd, MM/DD/YY', culture)} - ${localizer.format(
